@@ -23,9 +23,9 @@ def info() -> typing.Dict:
     return {
         "apiversion": "1",
         "author": "",  # TODO: Your Battlesnake Username
-        "color": "#888888",  # TODO: Choose color
-        "head": "default",  # TODO: Choose head
-        "tail": "default",  # TODO: Choose tail
+        "color": "#89CFF0",  # TODO: Choose color
+        "head": "do-sammy",  # TODO: Choose head
+        "tail": "do-sammy",  # TODO: Choose tail
     }
 
 
@@ -49,22 +49,24 @@ def move(game_state: typing.Dict) -> typing.Dict:
     # We've included code to prevent your Battlesnake from moving backwards
     my_head = game_state["you"]["body"][0]  # Coordinates of your head
     my_neck = game_state["you"]["body"][1]  # Coordinates of your "neck"
-
-    if my_neck["x"] < my_head["x"]:  # Neck is left of head, don't move left
+    board_width = game_state['board']['width']
+    board_height = game_state['board']['height']
+    
+    if my_neck["x"] < my_head["x"] or my_head["x"]- 1 == board_width :  # Neck is left of head, don't move left
         is_move_safe["left"] = False
 
-    elif my_neck["x"] > my_head["x"]:  # Neck is right of head, don't move right
+    elif my_neck["x"] > my_head["x"] or my_head["x"] + 1 == board_width:  # Neck is right of head, don't move right
         is_move_safe["right"] = False
 
-    elif my_neck["y"] < my_head["y"]:  # Neck is below head, don't move down
+    elif my_neck["y"] < my_head["y"] or my_head["y"]-1 == board_height:  # Neck is below head, don't move down
         is_move_safe["down"] = False
 
-    elif my_neck["y"] > my_head["y"]:  # Neck is above head, don't move up
+    elif my_neck["y"] > my_head["y"] or my_head["y"]+1 == board_height:  # Neck is above head, don't move up
         is_move_safe["up"] = False
+    
 
     # TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
-    # board_width = game_state['board']['width']
-    # board_height = game_state['board']['height']
+        
 
     # TODO: Step 2 - Prevent your Battlesnake from colliding with itself
     # my_body = game_state['you']['body']
