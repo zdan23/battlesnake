@@ -52,16 +52,16 @@ def move(game_state: typing.Dict) -> typing.Dict:
     board_width = game_state['board']['width']
     board_height = game_state['board']['height']
     
-    if my_neck["x"] < my_head["x"] or my_head["x"]- 1 == board_width :  # Neck is left of head, don't move left
+    if my_neck["x"] < my_head["x"] or my_head["x"]- 1 == board_width + 1 :  # Neck is left of head, don't move left
         is_move_safe["left"] = False
 
-    elif my_neck["x"] > my_head["x"] or my_head["x"] + 1 == board_width:  # Neck is right of head, don't move right
+    elif my_neck["x"] > my_head["x"] or my_head["x"] + 1 == board_width - 1:  # Neck is right of head, don't move right
         is_move_safe["right"] = False
 
-    elif my_neck["y"] < my_head["y"] or my_head["y"]-1 == board_height:  # Neck is below head, don't move down
+    elif my_neck["y"] < my_head["y"] or my_head["y"] + 1 == board_height + 1:  # Neck is below head, don't move down
         is_move_safe["down"] = False
 
-    elif my_neck["y"] > my_head["y"] or my_head["y"]+1 == board_height:  # Neck is above head, don't move up
+    elif my_neck["y"] > my_head["y"] or my_head["y"]+ 1 == board_height - 1:  # Neck is above head, don't move up
         is_move_safe["up"] = False
     
 
