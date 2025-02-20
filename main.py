@@ -46,7 +46,7 @@ def end(game_state: typing.Dict):
 
 
 def move(game_state: typing.Dict) -> typing.Dict:
-
+    is_smart = {}
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
 
     # We've included code to prevent your Battlesnake from moving backwards
@@ -79,7 +79,18 @@ def move(game_state: typing.Dict) -> typing.Dict:
     if my_head["y"] == board_height - 1:  # Head is at the top edge of the board
         is_move_safe["up"] = False
     if my_head["y"] == 0:  # Head is at the bottom edge of the board
-        is_move_safe["down"] = False    
+        is_move_safe["down"] = False
+
+    if my_head['x'] <= 3:
+        is_smart["left"] = False
+    if my_head['y'] <= 3:
+        is_smart['down'] = False 
+    if my_head['x'] >=  board_width - 3:
+        is_smart['right'] = False
+    if my_head['y'] >= board_height - 3:
+        is_smart['up'] = False
+    
+
 
     # TODO: Step 2 - Prevent your Battlesnake from colliding with itself
 # Prevent moving into the snake's own body
@@ -107,7 +118,16 @@ def move(game_state: typing.Dict) -> typing.Dict:
             is_move_safe["down"] = False
         if(xBody[i]["y"] - my_head['y'] == 1):
             is_move_safe["up"] = False
-
+    for i in range(1,len(yBody)):
+        if 0 >= (yBody[i]['x'] - my_head['x']) and (yBody[i]['x'] - my_head['x']) >= -3:
+            is_smart['left'] = False
+        if 0 <= (yBody[i]['x'] - my_head['x']) and (yBody[i]['x'] - my_head['x']) <= 3:
+            is_smart['right'] = False
+    for i in range(1,len(xBody)):
+        if 0 >= (xBody[i]['y'] - my_head['y']) and (xBody[i]['y'] - my_head['y']) >= -3:
+            is_smart['down'] = False
+        if 0 <= (xBody[i]['x'] - my_head['y']) and (xBody[i]['y'] - my_head['y']) <= 3:
+            is_smart['up'] = False
         
 
 
@@ -117,9 +137,13 @@ def move(game_state: typing.Dict) -> typing.Dict:
 
     # Are there any safe moves left?
     safe_moves = []
+    is_smart =[direction for direction, value in is_smart.items() if value]
     for move, isSafe in is_move_safe.items():
         if isSafe:
             safe_moves.append(move)
+
+    for i in range(len(is_smart)):
+        print("s " + is_smart[i])
 
     if len(safe_moves) == 0:
         print(f"MOVE {game_state['turn']}: No safe moves detected! Moving down")
@@ -152,9 +176,66 @@ def move(game_state: typing.Dict) -> typing.Dict:
         next_move = direction
     elif(game_state['you']['health'] >= 30):
         closestFoodList = []
-     #end HERE: sanger code lock in lfg 
-
-
+        for i in range(len(food)):
+            if(abs(food[i]['x'] - my_head['x']) + abs(food[i]['y'] - my_head['y'] < 4)):
+                closestFoodList.append(food[i])
+        distanceXL = []
+        distanceYL = []
+        for i in range(len(closestFoodList)):
+            distanceXL.append(closestFoodList[i]['x'] - my_head['x'])
+            distanceYL.append(closestFoodList[i]['y'] - my_head['y'])
+        XLeft = -11
+        XRight = 11
+        YUp = 11
+        YDown = -11
+        for i in range(len(distanceXL)):
+            if(0<distanceXL[i]<XRight):
+                XRight = distanceXL[i]
+            if (0>distanceXL[i]>XLeft):
+                XLeft = distanceXL[i]
+        for i in range(len(distanceYL)):
+            if(0<distanceYL[i]<YUp):
+                YUp = distanceYL[i]
+            if(0>distanceYL[i]>YDown):
+                YDown = distanceYL[i]
+        XM = XRight
+        YM = YUp
+        if(abs(XLeft)>abs(XRight)):
+            XM = XLeft
+        if(abs(YDown)>abs(YUp)):
+            YM = YDown
+        
+        bestY = None
+        bestX = None
+        best2 = None 
+        if(XM>0):
+            bestX = "right"
+        else:
+            bestX = "left"
+        if(YM > 0):
+            bestY = "up"
+        else:
+            bestY = "down"
+        if(abs(XM) > abs(YM)):
+            next_move = bestX
+            best2 = bestY
+        else:
+            next_move = bestY
+            best2 = bestX
+        if(next_move not in is_smart and best2 in is_smart):
+            next_move = best2
+        
+    while (True):
+        if(next_move in is_smart and next_move in safe_moves):
+            break
+        else:
+            for i in range(len(is_smart)):
+                if is_smart[i] in safe_moves:
+                    next_move = is_smart[i]
+                    break
+                else:
+                    next_move = random.choice(safe_moves)
+                    break
 
     print(f"MOVE {game_state['turn']}: {next_move}")
     if "right" in safe_moves:
